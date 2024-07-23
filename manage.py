@@ -7,6 +7,10 @@ from decouple import config
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    os.environ['DJANGO_SUPERUSER_USERNAME'] = config('DJANGO_SUPERUSER_USERNAME', default='admin')
+    os.environ['DJANGO_SUPERUSER_EMAIL'] = config('DJANGO_SUPERUSER_EMAIL', default='admin@example.com')
+    os.environ['DJANGO_SUPERUSER_PASSWORD'] = config('DJANGO_SUPERUSER_PASSWORD', default='password')
+    
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

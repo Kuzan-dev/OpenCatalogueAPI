@@ -56,7 +56,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
    ```bash
    python manage.py runserver
   
-  La API estará disponible en http://127.0.0.1:8000/.
+La API estará disponible en http://127.0.0.1:8000/.
 
 
 
