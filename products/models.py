@@ -1,8 +1,14 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from uuid import uuid4
 
 def product_image_path(instance, filename):
   return f"product/{instance.product.name}/{filename}"
+
+def get_unique_filename(filename):
+    extension = filename.split('.')[-1]
+    unique_filename = f"{uuid4().hex}.{extension}"
+    return unique_filename
 
 # Create your models here.
 class Image (models.Model):
@@ -11,6 +17,12 @@ class Image (models.Model):
 
   def __str__(self):
     return self.file.name
+  
+  def save(self, *args, **kwargs):
+    if self.file:
+      self.file.name = get_unique_filename(self.file.name)
+    super().save(*args, **kwargs)
+  
 
 class Material(models.Model):
   name = models.CharField(max_length=255)
