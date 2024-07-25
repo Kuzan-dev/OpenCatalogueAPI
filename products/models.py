@@ -17,8 +17,31 @@ class Product(models.Model):
   identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
   name = models.CharField(max_length=255)
   link = models.URLField()
+  rating = models.FloatField(default=0)
+  delivery = models.TextField(("Delivery"), blank=True)
+  stock = models.IntegerField(default=0)
+  available = models.BooleanField(default=True)
   description = models.TextField(("Description"), blank=True)
   images = models.ManyToManyField('Image', related_name='product')
+  tags = models.ManyToManyField('Tag', related_name='product')
+  prices = models.ManyToManyField('Price', related_name='product')
   
+  def __str__(self):
+    return self.name
+
+class Material(models.Model):
+  name = models.CharField(max_length=255)
+  prices = models.ForeignKey('Price', on_delete=models.CASCADE)
+  def __str__(self):
+    return self.name
+
+class Price(models.Model):
+   description = models.TextField(("Description"), blank=True)
+   price = models.FloatField()
+   def __str__(self):
+     return self.description
+   
+class Tag(models.Model):
+  name = models.CharField(max_length=255)
   def __str__(self):
     return self.name
