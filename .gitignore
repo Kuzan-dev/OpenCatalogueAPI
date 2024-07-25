@@ -1,3 +1,5 @@
 /entorno/
 **/__pycache__/
+# environment variables
 .env
+.env.production
