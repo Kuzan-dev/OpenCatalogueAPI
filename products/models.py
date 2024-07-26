@@ -31,15 +31,15 @@ class Product(models.Model):
 
 class Material(models.Model):
   name = models.CharField(max_length=255)
-  prices = models.ForeignKey('Price', on_delete=models.CASCADE)
   def __str__(self):
     return self.name
 
 class Price(models.Model):
-   description = models.TextField(("Description"), blank=True)
-   price = models.FloatField()
-   def __str__(self):
-     return self.description
+  description = models.TextField(("Description"), blank=True)
+  price = models.FloatField()
+  material = models.ForeignKey(Material, related_name='prices', on_delete=models.CASCADE)
+  def __str__(self):
+    return self.description
    
 class Tag(models.Model):
   name = models.CharField(max_length=255)
