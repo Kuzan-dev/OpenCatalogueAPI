@@ -8,6 +8,7 @@ def product_image_path(instance, filename):
 # Create your models here.
 class Image(models.Model):
     file = models.ImageField(upload_to=product_image_path)
+    is_ready = models.BooleanField(default=False)
 
     def __str__(self):
       return self.file.name
