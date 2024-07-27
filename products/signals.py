@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Image)
 def update_image_status(sender, instance, created, **kwargs):
-  if created:
+  if created and not instance.is_ready:
     instance.is_ready = True
     instance.save()
 
