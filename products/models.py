@@ -37,7 +37,7 @@ class Material(models.Model):
 class Price(models.Model):
   description = models.TextField(("Description"), blank=True)
   price = models.FloatField()
-  material = models.ForeignKey(Material, related_name='prices', on_delete=models.CASCADE)
+  material = models.ForeignKey(Material, related_name='prices', on_delete=models.CASCADE, default= 1)
   def __str__(self):
     return self.description
    

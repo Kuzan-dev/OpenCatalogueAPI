@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Image, Product, Price, Tag, Material
+import json
 
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,9 +25,11 @@ class ImageSerializer(serializers.ModelSerializer):
 class ProductWriteSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
 
-    tags = TagSerializer(many=True)
-    prices = PriceSerializer(many=True)
-
+    #si trabajaramos con json usariamos: tags = TagSerializer(many=True)
+    tags = serializers.CharField(write_only=True, required=False) 
+    #Si trabajaramos con json usariamos: prices = PriceSerializer(many=True)
+    prices = serializers.CharField(write_only=True, required=False)
+    
     class Meta:
       model = Product
       fields = ['id', 'name', 'link', 'description', 'images', 'identifier', 'rating', 'delivery', 'stock', 'available', 'tags', 'prices']
@@ -35,6 +38,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
       images_data = validated_data.pop('images', [])
       tags_data = validated_data.pop('tags', [])
       prices_data = validated_data.pop('prices', [])
+
+      # Convertir las cadenas de texto JSON a listas
+      tags_data = json.loads(tags_data) if tags_data else []
+      prices_data = json.loads(prices_data) if prices_data else []
       
       # Creo el producto
       product = Product.objects.create(**validated_data)
@@ -54,7 +61,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
       for tag_data in tags_data:
         tag_name = tag_data['name']
         tag , created = Tag.objects.get_or_create(name=tag_name)
-        product.tag.add(tag)
+        product.tags.add(tag)
       
       # Agrego las imagenes
       for image in images_data:
@@ -66,6 +73,11 @@ class ProductWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
       images_data = validated_data.pop('images', [])
       tags_data = validated_data.pop('tags', [])
+      prices_data = validated_data.pop('prices', [])
+
+      # Convertir las cadenas de texto JSON a listas
+      tags_data = json.loads(tags_data) if tags_data else []
+      prices_data = json.loads(prices_data) if prices_data else []
 
       # Actualizo el producto
       instance = super().update(instance, validated_data)
@@ -82,21 +94,22 @@ class ProductWriteSerializer(serializers.ModelSerializer):
       instance.tags.clear()
 
       # Agrego los tags	nuevos
-      for tag in tags_data:
-        tag_instance = Tag.objects.create(name=tag['name'])
-        instance.tags.add(tag_instance)   
+      for tag_data in tags_data:
+        tag_name = tag_data['name']
+        tag_instance, created = Tag.objects.get_or_create(name=tag_name)
+        instance.tags.add(tag_instance)
       
       # Elimino los precios
       instance.prices.clear()
 
       # Agrego los precios nuevos
-      for price in validated_data['prices']:
+      for price_data in prices_data:
         # Extraigo el material
-        material_data = price.pop('material')
+        material_data = price_data.pop('material')
         # Creo el material si no existe (get_or_create : Busca, si no lo encuentra lo crea)
         material, created = Material.objects.get_or_create(name=material_data['name'])
-        # Creo una instancia de Price usando el material(creado o encontrado) y los datos del precio
-        price_instance = Price.objects.create(material=material, **price)
+        # Creo una instancia de Price usando el material (creado o encontrado) y los datos del precio
+        price_instance = Price.objects.create(material=material, **price_data)
         # Agrego el precio al producto
         instance.prices.add(price_instance)
       
