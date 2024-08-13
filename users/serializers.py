@@ -8,25 +8,26 @@ from rest_framework.validators import UniqueValidator
 
 class UserRegistrationSerializer(RegisterSerializer):
     """
-    Serializer for user registration.
+   Serializador para registro de usuarios.
 
-    This serializer is used for registering new users. It validates the user's
-    email, first name, last name, and password. It also provides methods for
-    cleaning and creating extra data for the user.
+    Este serializador se utiliza para registrar nuevos usuarios. Valida el usuario
+    correo electrónico, nombre, apellido y contraseña. También proporciona métodos para
+    limpieza y creación de datos adicionales para el usuario.
 
-    Attributes:
-        username: The username of the user (not used in this serializer).
-        first_name: The first name of the user.
-        last_name: The last name of the user.
-        email: The email address of the user.
+    Atributos:
+        nombre de usuario: el nombre de usuario del usuario (no utilizado en este serializador).
+        first_name: el nombre del usuario.
+        last_name: El apellido del usuario.
+        correo electrónico: La dirección de correo electrónico del usuario.
 
-    Methods:
-        validate: Validates the user's email and password.
-        get_cleaned_data_extra: Returns extra cleaned data for the user.
-        create_extra: Creates extra data for the user.
-        custom_signup: Performs custom signup logic for the user.
+    Métodos:
+        validar: Valida el correo electrónico y la contraseña del usuario.
+        get_cleaned_data_extra: devuelve datos limpios adicionales para el usuario.
+        create_extra: Crea datos adicionales para el usuario.
+        custom_signup: realiza una lógica de registro personalizada para el usuario.
+
     """
-
+     # Define los campos del serializador.
     username = None
     first_name = serializers.CharField(required=True, write_only=True)
     last_name = serializers.CharField(required=True, write_only=True)
@@ -40,25 +41,29 @@ class UserRegistrationSerializer(RegisterSerializer):
         ],
     )
 
+    # Define los campos de contraseña.
+
     def validate(self, validated_data):
         """
-        Validates the user's email and password.
+        Valida el email y la contraseña del usuario.
 
         Args:
-            validated_data: The validated data for the serializer.
+            datos_validados: Los datos validados para el serializador.
 
-        Raises:
-            serializers.ValidationError: If the email is missing or the
-                passwords don't match.
+        Suena:
+            serializers.ValidationError: Si falta el email o las
+                contraseñas no coinciden.
 
-        Returns:
-            The validated data.
+        Devuelve:
+            Los datos validados.
         """
+        # Obtiene el email del usuario.
         email = validated_data.get("email")
 
+        # Verifica si el email está presente.
         if not email:
             raise serializers.ValidationError(_("Email is required."))
-
+        # Verifica si las contraseñas coinciden.
         if validated_data["password1"] != validated_data["password2"]:
             raise serializers.ValidationError(
                 _("The two password fields didn't match.")
@@ -66,36 +71,42 @@ class UserRegistrationSerializer(RegisterSerializer):
 
         return validated_data
 
+       # Define los campos de contraseña.
     def get_cleaned_data_extra(self):
         """
-        Returns extra cleaned data for the user.
+        Devuelve datos extra limpiados para el usuario.
 
-        Returns:
-            A dictionary containing the first name and last name of the user.
+        Devuelve:
+            Un diccionario que contiene el nombre y apellidos del usuario.
         """
+        # Devuelve los datos limpios adicionales para el usuario.
         return {
             "first_name": self.validated_data.get("first_name", ""),
             "last_name": self.validated_data.get("last_name", ""),
         }
+    # Define los campos de contraseña.
 
     def create_extra(self, user, validated_data):
         """
-        Creates extra data for the user.
+        Returns extra data cleared for the user.
 
-        Args:
-            user: The user object.
-            validated_data: The validated data for the serializer.
+        Returns:
+            A dictionary containing the user's first and last name.
         """
+        # Crea datos adicionales para el usuario.
         user.first_name = self.validated_data.get("first_name")
         user.last_name = self.validated_data.get("last_name")
         user.save()
 
+        # Define el serializador de registro de usuario.
+
     def custom_signup(self, request, user):
         """
-        Performs custom signup logic for the user.
+        Realiza la lógica de registro personalizada para el usuario.
 
         Args:
-            request: The HTTP request object.
-            user: The user object.
+            request: El objeto de petición HTTP.
+            user: El objeto usuario.
         """
+        # Crea datos adicionales para el usuario.
         self.create_extra(user, self.get_cleaned_data_extra())

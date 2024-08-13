@@ -33,6 +33,7 @@ ALLOWED_HOSTS = env_config.get("ALLOWED_HOSTS", cast=Csv())
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sites',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -165,9 +166,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env_config.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env_config.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'cprodriguez@unitru.edu.pe'
+EMAIL_HOST_PASSWORD = 'c23c11c98c'
+DEFAULT_FROM_EMAIL = 'cprodriguez@unitru.edu.pe'
 
+SEND_CONFIRMATION_EMAIL = True
 
 
 

@@ -1,47 +1,55 @@
-from django.contrib.auth.backends import BaseBackend
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
-
+# Obtiene el modelo de usuario.
 User = get_user_model()
 
-
-class EmailAuthBackend(BaseBackend):
+# Define el backend de autenticación personalizado.
+class EmailAuthBackend(ModelBackend):
     """
-    Custom authentication backend that authenticates users based on their email address.
+    Backend de autenticación personalizado que autentica a los usuarios en función de su dirección de correo electrónico.
     """
-
+    # Define el método de autenticación.
     def authenticate(self, request, username=None, password=None, **kwargs):
         """
-        Authenticates a user based on their email address and password.
+        Autentica a un usuario basándose en su dirección de correo electrónico y contraseña.
 
         Args:
-            request (HttpRequest): The current request object.
-            username (str): The email address of the user.
-            password (str): The password of the user.
+            request (HttpRequest): El objeto de petición actual.
+            username (str): La dirección de correo electrónico del usuario.
+            password (str): La contraseña del usuario.
 
-        Returns:
-            User: The authenticated user if the email and password are correct, None otherwise.
+        Devuelve:
+            Usuario: El usuario autenticado si el email y la contraseña son correctos, Ninguno en caso contrario.
         """
+        # Verifica si se proporcionó un nombre de usuario y contraseña.
         try:
-            # Attempt to retrieve the user using the email address
+            # Obtiene el usuario basado en la dirección de correo electrónico.
             user = User.objects.get(email=username)
-            # Verify if the password is correct
+            # Verifica la contraseña del usuario.
             if user.check_password(password):
+                # Devuelve el usuario si la contraseña es correcta.
                 return user
+            # Devuelve Ninguno si la contraseña es incorrecta.
         except User.DoesNotExist:
             return None
-
+           
+    # Define el método para obtener un usuario.
     def get_user(self, user_id):
         """
-        Retrieves a user based on their user ID.
+        Recupera un usuario basándose en su ID de usuario.
 
         Args:
-            user_id (str): The ID of the user.
+            user_id (str): El ID del usuario.
 
-        Returns:
-            User: The user with the specified ID if found, None otherwise.
+        Devuelve:
+            Usuario: El usuario con el ID especificado si se encuentra, Ninguno en caso contrario.
         """
+        # Obtiene el modelo de usuario.
         UserModel = get_user_model()
+        # Verifica si se proporcionó un ID de usuario.
         try:
+            # Obtiene el usuario basado en el ID de usuario.
             return UserModel.objects.get(pk=user_id)
+        # Devuelve Ninguno si el usuario no se encuentra.
         except UserModel.DoesNotExist:
             return None
